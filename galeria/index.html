@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galeria - Bosque Nuboso El Cocora</title>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0c10;
+      --panel: rgba(255, 255, 255, 0.04);
+      --glass: rgba(255, 255, 255, 0.08);
+      --accent: #7ddc8f;
+      --accent-2: #56c5a0;
+      --text: #f1f1f6;
+      --muted: #aab2bf;
+      --radius: 18px;
+      --blur: 18px;
+      --shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Geist, "Geist Fallback", system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 20% 20%, rgba(86, 197, 160, 0.05), transparent 40%),
+                  radial-gradient(circle at 80% 0%, rgba(125, 220, 143, 0.08), transparent 35%),
+                  var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+      font-feature-settings: "kern";
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      padding: 14px 64px;
+      gap: 18px;
+      background: rgba(8, 9, 12, 0.72);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      backdrop-filter: blur(var(--blur));
+    }
+
+    .nav-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      white-space: nowrap;
+    }
+
+    .nav-logo {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      display: block;
+      object-fit: contain;
+      filter: drop-shadow(0 10px 24px rgba(0,0,0,0.45));
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 22px;
+      font-size: 12px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+    }
+
+    .nav-links a {
+      padding: 8px 0;
+      position: relative;
+      opacity: 0.85;
+    }
+
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: 2px;
+      width: 100%; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      transform: scaleX(0);
+      transform-origin: center;
+      transition: transform 0.4s ease;
+    }
+
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-links a:hover { opacity: 1; }
+
+    .nav-cta {
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.04);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text);
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      border-color: rgba(125, 220, 143, 0.5);
+      box-shadow: 0 10px 30px rgba(125, 220, 143, 0.2);
+    }
+
+    .lang-toggle {
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(125, 220, 143, 0.35);
+      background: rgba(125, 220, 143, 0.08);
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text);
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .lang-toggle:hover {
+      transform: translateY(-2px);
+      border-color: rgba(125, 220, 143, 0.6);
+      box-shadow: 0 10px 30px rgba(125, 220, 143, 0.2);
+    }
+    .nav-toggle {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .nav-toggle-button {
+      display: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid rgba(125, 220, 143, 0.35);
+      background: linear-gradient(160deg, rgba(255,255,255,0.06), rgba(125, 220, 143, 0.12));
+      color: var(--text);
+      place-items: center;
+      position: relative;
+      box-shadow: 0 16px 30px rgba(0,0,0,0.35);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .nav-toggle-button span {
+      width: 18px;
+      height: 1.5px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(255,255,255,0.9), var(--accent));
+      display: block;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      transition: transform 0.3s ease, opacity 0.2s ease, top 0.3s ease;
+    }
+
+    .nav-toggle-button span:nth-child(1) { top: 14px; }
+    .nav-toggle-button span:nth-child(2) { top: 21px; width: 14px; }
+    .nav-toggle-button span:nth-child(3) { top: 28px; }
+
+    .nav-toggle-button:hover {
+      transform: translateY(-2px);
+      border-color: rgba(125, 220, 143, 0.6);
+      box-shadow: 0 20px 36px rgba(0,0,0,0.45);
+    }
+
+    .nav-toggle:checked + .nav-toggle-button span:nth-child(1) {
+      top: 21px;
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    .nav-toggle:checked + .nav-toggle-button span:nth-child(2) {
+      opacity: 0;
+    }
+
+    .nav-toggle:checked + .nav-toggle-button span:nth-child(3) {
+      top: 21px;
+      transform: translateX(-50%) rotate(-45deg);
+    }
+
+    .nav-panel {
+      position: absolute;
+      top: calc(100% + 12px);
+      right: 0;
+      width: min(280px, 90vw);
+      padding: 16px;
+      border-radius: 16px;
+      background: rgba(8, 9, 12, 0.92);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: var(--shadow);
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 12px;
+    }
+
+    .nav-panel a {
+      color: var(--text);
+      opacity: 0.85;
+    }
+
+    .nav-panel a:hover { opacity: 1; }
+
+    .nav-panel-cta {
+      padding: 10px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.18);
+      text-align: center;
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+    }
+
+    .nav-toggle:checked ~ .nav-panel {
+      display: flex;
+    }
+
+    .hero {
+      position: relative;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 120px 24px 64px;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.45), rgba(0,0,0,0.8)),
+        url('../public/herogaleria.jpg') center/cover no-repeat;
+      filter: saturate(1.1) brightness(0.85);
+      z-index: -2;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 20%, rgba(125, 220, 143, 0.18), transparent 36%),
+                  radial-gradient(circle at 20% 70%, rgba(86, 197, 160, 0.16), transparent 40%);
+      mix-blend-mode: screen;
+      animation: glow 10s ease-in-out infinite alternate;
+      z-index: -1;
+    }
+
+    .hero-content {
+      max-width: 760px;
+      display: grid;
+      gap: 16px;
+      animation: fadeUp 1.2s ease both;
+    }
+
+    .eyebrow {
+      letter-spacing: 0.5em;
+      text-transform: uppercase;
+      font-size: 11px;
+      opacity: 0.9;
+      color: var(--muted);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: 'Raleway', Geist, "Geist Fallback", system-ui, -apple-system, sans-serif;
+      font-size: clamp(28px, 5vw, 54px);
+      letter-spacing: 0.24em;
+      font-weight: 300;
+      text-transform: uppercase;
+      line-height: 1.18;
+    }
+
+    .accent-bar {
+      width: 78px;
+      height: 2px;
+      margin: 0 auto;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      position: relative;
+    }
+
+    .accent-bar::before, .accent-bar::after {
+      content: '';
+      position: absolute;
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 999px;
+      top: -3px;
+      animation: pulse 2.6s ease-in-out infinite;
+    }
+    .accent-bar::before { left: -16px; }
+    .accent-bar::after { right: -16px; animation-delay: 0.8s; }
+
+    .lead {
+      margin: 0;
+      color: #dfe3ec;
+      font-size: 16px;
+    }
+
+    .scroll-cue {
+      position: absolute;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+      display: grid;
+      place-items: center;
+      opacity: 0.7;
+    }
+
+    .scroll-cue::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-right: 2px solid var(--accent);
+      border-bottom: 2px solid var(--accent);
+      transform: rotate(45deg);
+      animation: arrow-bounce 1.6s ease-in-out infinite;
+    }
+
+    section {
+      padding: 64px 10vw 90px;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .section-title::before {
+      content: '';
+      width: 44px; height: 1px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+      opacity: 0.7;
+    }
+
+    .section-heading {
+      font-family: 'Raleway', Geist, "Geist Fallback", system-ui, -apple-system, sans-serif;
+      font-size: clamp(26px, 4vw, 42px);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin: 6px 0 24px;
+      font-weight: 400;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      grid-auto-flow: dense;
+    }
+
+    .gallery-item {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      min-height: 220px;
+      background: rgba(255,255,255,0.04);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.35);
+    }
+
+    .gallery-item.wide { grid-column: span 2; }
+    .gallery-item.tall { grid-row: span 2; min-height: 280px; }
+
+    .gallery-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease, filter 0.6s ease;
+    }
+
+
+    .gallery-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.5));
+      opacity: 0.3;
+      transition: opacity 0.6s ease;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.05);
+      filter: saturate(1.12);
+    }
+
+    .gallery-item:hover::after { opacity: 0.6; }
+
+    .gallery-caption {
+      position: absolute;
+      left: 16px;
+      bottom: 14px;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #e8f7ef;
+    }
+
+    footer {
+      padding: 48px 10vw 64px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      background: rgba(0,0,0,0.4);
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes glow {
+      from { opacity: 0.6; transform: scale(1); }
+      to { opacity: 0.9; transform: scale(1.05); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 0.4; }
+    }
+
+    @keyframes arrow-bounce {
+      0%, 100% { transform: translateY(-4px) rotate(45deg); opacity: 0.4; }
+      50% { transform: translateY(4px) rotate(45deg); opacity: 1; }
+    }
+
+    @media (max-width: 900px) {
+      header { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .nav-right { margin-left: auto; }
+      .nav-toggle-button { display: grid; }
+      section { padding: 56px 24px 80px; }
+      .gallery-item.wide { grid-column: span 1; }
+      .gallery-item.tall { grid-row: span 1; min-height: 220px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="nav-brand" href="/">
+      <img class="nav-logo" src="../public/LOGOCOCORA.png" alt="Logo El Cocora">
+    </a>
+    <nav class="nav-links">
+      <a href="/index.html#experiencia">Experiencias</a>
+      <a href="/index.html#sensaciones">Rutas</a>
+      <a href="/galeria/">Galeria</a>
+      <a href="/index.html#visita">Visita</a>
+    </nav>
+    <div class="nav-right">
+      <a class="nav-cta" href="https://www.facebook.com/elcocora/?locale=es_LA" target="_blank" rel="noopener">Síganos</a>
+      <a class="lang-toggle" href="/gallery/">EN</a>
+      <input class="nav-toggle" id="nav-toggle" type="checkbox" aria-hidden="true">
+      <label class="nav-toggle-button" for="nav-toggle" aria-label="Abrir menú">
+        <span></span>
+        <span></span>
+        <span></span>
+      </label>
+      <div class="nav-panel" role="navigation" aria-label="Navegación móvil">
+        <a href="/index.html#experiencia">Experiencias</a>
+        <a href="/index.html#sensaciones">Rutas</a>
+        <a href="/galeria/">Galeria</a>
+        <a href="/index.html#visita">Visita</a>
+        <a class="nav-panel-cta" href="https://www.facebook.com/elcocora/?locale=es_LA" target="_blank" rel="noopener">Síganos</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <div class="eyebrow">Bosque nuboso</div>
+        <h1>Galeria</h1>
+        <div class="accent-bar"></div>
+        <p class="lead">Una coleccion de momentos entre mariposas, senderos y jardines del Cocora.</p>
+      </div>
+      <div class="scroll-cue" aria-hidden="true"></div>
+    </section>
+
+    <section id="galeria">
+      <div class="section-title">Galeria</div>
+      <h2 class="section-heading">Naturaleza en detalle</h2>
+      <div class="gallery-grid">
+        <figure class="gallery-item wide">
+          <img src="../public/herogaleria.jpg" alt="Bosque Nuboso El Cocora">
+          <figcaption class="gallery-caption">Bosque</figcaption>
+        </figure>
+        <figure class="gallery-item wide">
+          <img src="../public/lago.webp" alt="Lago del bosque">
+          <figcaption class="gallery-caption">Lago</figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <img src="../public/flores.webp" alt="Flores del jardin">
+          <figcaption class="gallery-caption">Flores</figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <img src="../public/rio.webp" alt="Rio del recorrido">
+          <figcaption class="gallery-caption">Rio</figcaption>
+        </figure>
+        <figure class="gallery-item wide">
+          <img src="../public/mural.jpg" alt="Mural del bosque">
+          <figcaption class="gallery-caption">Mural</figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <img src="../public/cafeteria.jpg" alt="Cafeteria">
+          <figcaption class="gallery-caption">Cafeteria</figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <img src="../public/pupas.jpg" alt="Pupas">
+          <figcaption class="gallery-caption">Pupas</figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <img src="../public/Piña.jpg" alt="Piña">
+          <figcaption class="gallery-caption">Piña</figcaption>
+        </figure>
+        <figure class="gallery-item">
+          <img src="../public/Hongos.jpg" alt="Hongos">
+          <figcaption class="gallery-caption">Hongos</figcaption>
+        </figure>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    © 2026 KÓNTEC DIGITAL MAQUETAS
+  </footer>
+</body>
+</html>
